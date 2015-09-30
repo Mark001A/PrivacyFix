@@ -1,0 +1,130 @@
+package cn.guo.privacyfix;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+public class DBUtil {
+
+	Context context;
+	DatabaseHelper dbhelper;
+	public SQLiteDatabase sqlitedatabase;
+
+	public DBUtil(Context context) {
+		super();
+		this.context = context;
+	}
+
+	// 打开数据库连接
+	public void opendb(Context context) {
+		dbhelper = new DatabaseHelper(context);
+		sqlitedatabase = dbhelper.getWritableDatabase();
+	}
+
+	// 关闭数据库连接
+	public void closedb(Context context) {
+		if (sqlitedatabase.isOpen()) {
+			sqlitedatabase.close();
+		}
+	}
+
+	// 插入表数据
+	public void insert(String table_name, ContentValues values) {
+		opendb(context);
+		long str = sqlitedatabase.insert(table_name, null, values);
+		Log.i("insert", str + "");
+		closedb(context);
+	}
+
+	// 更新数据
+	public int updatatable(String table_name, ContentValues values, int ID) {
+		opendb(context);
+		return sqlitedatabase.update(table_name, values, " Type_ID = ? ",
+				new String[] { String.valueOf(ID) });
+	}
+
+	// 新增表
+	public void creatTable() {
+		opendb(context);
+		dbhelper.newTable(sqlitedatabase);
+		closedb(context);
+	}
+
+	// 删除表数据
+	public void delete(String table_name) {
+		opendb(context);
+		try {
+
+			sqlitedatabase.delete(table_name, null, null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closedb(context);
+		}
+	}
+
+//	public void deleteRow(String str) {
+//		opendb(context);
+//		try {
+//			sqlitedatabase.delete("system", "_id>?", new String[] { "110" });
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			closedb(context);
+//		}
+//	}
+
+	// 查找数据
+
+	public JSONArray DeptArray() {
+		JSONArray Items = new JSONArray();
+		try {
+			opendb(context);
+			String sql = "SELECT * FROM HR_B_DEPT";
+			Cursor c = sqlitedatabase.rawQuery(sql, null);
+			if (c != null) {
+				while (c.moveToNext()) {
+					JSONObject item = new JSONObject();
+					item.put("INNERID",
+							c.getString(c.getColumnIndex("INNERID")));
+					item.put("DEPTCODE",
+							c.getString(c.getColumnIndex("DEPTCODE")));
+					item.put("DEPTNAME",
+							c.getString(c.getColumnIndex("DEPTNAME")));
+					Items.put(item);
+				}
+				c.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closedb(context);
+		}
+		return Items;
+	}
+
+	public String[] query(String str1, int str2) {
+		opendb(context);
+		String sql = "SELECT * FROM " + str1 + " LIMIT " + (str2 - 1) + ","
+				+ str2;
+		;
+		Cursor c = sqlitedatabase.rawQuery(sql, null);
+		String dbstr[] = new String[19];
+		while (c.moveToFirst()) {
+			for (int i = 0; i < 19; i++) {
+				dbstr[i] = c.getString(i);
+				System.out.println("---" + dbstr[i]);
+			}
+			break;
+		}
+		c.close();
+		closedb(context);
+		return dbstr;
+	}
+
+}

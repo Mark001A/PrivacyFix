@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="cn.zhg.notrack.About" >
+
+    <item
+        android:id="@+id/save"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="保存"/>
+    <item
+        android:id="@+id/saveto"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="保存到服务器"/>
+    <item
+        android:id="@+id/onekey"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="一键执行"/>
+
+</menu>
